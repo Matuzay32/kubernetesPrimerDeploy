@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ym-api-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ym-api
+  template:
+    metadata:
+      labels:
+        app: ym-api
+    spec:
+      containers:
+        - name: ym-api
+          image: node:18
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: node-modules
+              mountPath: /usr/src/app/node_modules
+            - name: ym-api-volume
+              mountPath: /usr/src/app
+          env:
+            - name: VIRTUAL_HOST
+              value: api2.youmarket.local
+            - name: MYSQL_HOST
+              value: db
+            - name: MYSQL_PORT
+              value: '3306'
+            - name: MYSQL_DB_NAME
+              value: ymlocal
+            - name: MYSQL_USER
+              value: ymlocal
+            - name: MYSQL_PASSWORD
+              value: secret
+            - name: JWT_SECRET_KEY
+              value: secret
+            - name: JWT_EXPIRES_IN
+              value: 1h
+            - name: JWT_REFRESH_EXPIRATION_TIME
+              value: 10d
+            - name: DEFAULT_IMAGE_SV
+              value: https://s3-us-west-2.amazonaws.com/ym2-static-repository-ar-dev
+            - name: TIME_ZONE
+              value: America/Argentina/Buenos_Aires
+            - name: REDIS_PORT
+              value: '6379'
+            - name: REDIS_HOST
+              value: ym-cache
+            - name: REDIS_PASSWORD
+              value: eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+            - name: DEFAULT_SUBDOMAIN_HOST
+              value: youmarket.local
+            - name: IMAGEN_PRODUCT_URL
+              value: https://s3-us-west-2.amazonaws.com/ym2-static-repository-ar-demo
+            - name: IMAGEN_PDF
+              value: https://ym.testyoumarket.com
+      volumes:
+        - name: node-modules
+          emptyDir: {}
+        - name: ym-api-volume
+          hostPath:
+            path: /Users/ezequielrey/dev/ym/ym-api # Reemplaza con tu ruta
